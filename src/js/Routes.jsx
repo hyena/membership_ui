@@ -10,8 +10,9 @@ import Member from './components/membership/Member'
 import Committees from './components/committee/Committees'
 import Elections from './components/election/Elections'
 import ElectionDetail from './components/election/ElectionDetail'
-import Vote from './components/election/Vote'
 import NotFound from './components/common/NotFound'
+import PrintBallots from './components/election/PrintBallots'
+import Vote from './components/election/Vote'
 
 import { USE_AUTH } from './config'
 import {UserAuthWrapper} from 'redux-auth-wrapper'
@@ -47,6 +48,7 @@ class Routes extends Component {
             <Route path="admin" component={MemberList} />
             <Route path="elections" component={Elections} />
             <Route path="elections/:electionId" component={ElectionDetail} />
+            <Route path="elections/:electionId/print" component={PrintBallots} />
             <Route path="vote/:electionId" component={Vote} />
           </Route>
           <Route path="*" component={NotFound}/>

@@ -1,0 +1,28 @@
+@import "colors";
+
+.election-toolbox {
+    > label {
+        &:hover {
+            background: $highlight-main;
+        }
+        height: 2em;
+        line-height: 2em;
+        width: 100%;
+    }
+    > label > * {
+        vertical-align: middle;
+        margin: 0 1.5em;
+    }
+    > label > a {
+        display: block;
+        float: right;
+    }
+}
+
+span.rank-box {
+    display: inline-block;
+    height: 5em;
+    width: 5em;
+    border: .5em solid black;
+    margin: 2em;
+}
