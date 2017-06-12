@@ -20,7 +20,7 @@ class Committees extends Component {
     super(props)
     this.state = {
       committees: [],
-      committee: {name:'', admin_list:''},
+      committee: {name: '', admin_list: ''},
       inSubmission: false
     }
   }

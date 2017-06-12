@@ -12,14 +12,14 @@ import {
   Col,
   Form
 } from 'react-bootstrap'
-import { Map, List } from 'immutable'
+import { fromJS, Map, List } from 'immutable'
 
-class Elections extends Component {
+class ElectionDetail extends Component {
 
   constructor (props) {
     super(props)
     this.state = {
-      election: Map({name:'', candidates:List(), number_winners:1, 'votes_cast':0}),
+      election: Map({name: '', candidates: List(), number_winners: 1, 'votes_cast': 0}),
       inSubmission: false
     }
   }
@@ -48,8 +48,8 @@ class Elections extends Component {
       })
     }
     const candidates = []
-    this.state.election.get('candidates').forEach((candidate, index)=>{
-      candidates.push(<div key={`candidate-${index}`}>{candidate}</div>)
+    this.state.election.get('candidates').forEach((candidate, index) => {
+      candidates.push(<div key={`candidate-${index}`}>{candidate.get('name')}</div>)
     })
     return (
       <div>
@@ -101,7 +101,7 @@ class Elections extends Component {
   async getElectionDetails () {
     try {
       const results = await membershipApi(HTTP_GET, `/election`, {id: this.props.params.electionId})
-      this.setState({election: Map(results)})
+      this.setState({election: fromJS(results)})
     } catch (err) {
       return logError('Error loading test', err)
     }
@@ -124,4 +124,4 @@ class Elections extends Component {
   }
 }
 
-export default connect((state) => state)(Elections)
+export default connect((state) => state)(ElectionDetail)

@@ -21,7 +21,7 @@ class Elections extends Component {
     super(props)
     this.state = {
       elections: [],
-      election: {name:'', candidate_list:'', number_winners:'1'},
+      election: {name: '', candidate_list: '', number_winners: '1'},
       inSubmission: false
     }
   }
@@ -111,7 +111,7 @@ class Elections extends Component {
   async submitForm (e, name, endpoint) {
     e.preventDefault()
     if (this.state.inSubmission) {
-      return
+      return Promise()
     }
     this.setState({inSubmission: true})
     try {

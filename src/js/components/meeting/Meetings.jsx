@@ -20,7 +20,7 @@ class Meetings extends Component {
     super(props)
     this.state = {
       meetings: [],
-      meeting: {name:'', committee:''},
+      meeting: {name: '', committee: ''},
       inSubmission: false
     }
   }
@@ -80,7 +80,7 @@ class Meetings extends Component {
     )
   }
 
-  async getMeetings() {
+  async getMeetings () {
     try {
       const results = await membershipApi(HTTP_GET, `/meeting/list`)
       this.setState({committees: Map(results)})

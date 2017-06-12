@@ -21,6 +21,4 @@ export function logError (title, err = new Error(title)) {
     message: errorMessage,
     level: 'error'
   })
-
-  console.error(title, err)
 }
