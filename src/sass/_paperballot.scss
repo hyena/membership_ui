@@ -1,0 +1,45 @@
+@media print {
+
+    nav, .print-hidden {
+        display: none;
+    }
+
+    .printPage {
+        page-break-after: always;
+    }
+
+    @page {
+        size: 8.5in 11in;
+    }
+}
+
+.candidateList {
+    margin: 0;
+    padding: 0;
+    -webkit-column-count: 2; /* Chrome, Safari, Opera */
+    -moz-column-count: 2; /* Firefox */
+    column-count: 2;
+    
+    > li {
+        $item-height: 2.5cm;
+        list-style: none;
+        height: $item-height;
+        line-height: $item-height;
+        white-space: nowrap;
+        > span {
+            display: inline-block;
+            vertical-align: middle;
+            font-size: 1.5em;
+            word-break: break-all;
+        }
+    }
+}
+
+span.rank-box {
+    $box-size: 1.5cm;
+    display: inline-block;
+    height: $box-size;
+    width: $box-size;
+    border: .1cm solid black;
+    margin: 1cm;
+}

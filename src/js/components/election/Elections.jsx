@@ -41,9 +41,16 @@ class Elections extends Component {
 
   render () {
     const elections = []
-    this.state.elections.forEach((election, id) => {
+    this.state.elections.forEach((electionName, id) => {
       elections.push(
-        <div key={`election-${id}`}><Link to={`/elections/${id}/`}>{election}</Link></div>
+        <div key={`election-toolbox-${id}`} className="election-toolbox">
+          <label htmlFor={`election-${id}`}>
+            <input type="checkbox" id={`election-${id}`}/>
+            <span>{electionName}</span>
+            <Link key={`print-ballots-${id}`} to={`/elections/${id}/print`}>Print Ballots</Link>
+            <Link key={`edit-details-${id}`} to={`/elections/${id}/`}>Details</Link>
+          </label>
+        </div>
       )
     })
     let admin = false
@@ -104,7 +111,7 @@ class Elections extends Component {
       const results = await membershipApi(HTTP_GET, `/election/list`)
       this.setState({elections: Map(results)})
     } catch (err) {
-      return logError('Error loading test', err)
+      return logError('Error loading /election/list', err)
     }
   }
 
@@ -118,7 +125,7 @@ class Elections extends Component {
       await membershipApi(HTTP_POST, endpoint, this.state[name])
       this.getElections()
     } catch (err) {
-      return logError('Error loading test', err)
+      return logError('Error creating election', err)
     } finally {
       this.setState({inSubmission: false})
     }
