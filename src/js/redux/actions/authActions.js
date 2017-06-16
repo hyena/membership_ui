@@ -10,6 +10,7 @@ import {
 import {USE_AUTH, AUTH0_CLIENT_ID, AUTH0_DOMAIN} from '../../config'
 import {push} from 'react-router-redux'
 import Auth0Lock from 'auth0-lock'
+import decode from 'jwt-decode'
 
 const lockOptions = {
   auth: {
@@ -21,7 +22,7 @@ const lockOptions = {
   },
   avatar: null,
   theme: {
-    logo: 'http://www.dsasf.org/images/dsa-logo.png',
+    logo: 'https://lh5.googleusercontent.com/zQ3IUtn79QWKsuiVdUP5fcX7dpituCpQgh3F3PJ7-OiNTY6WZqX89-el77y4fHHhUBNHAF8UewEzJsw=w1441-h785',
     primaryColor: '#ED3124'
   },
   languageDictionary: {
@@ -99,6 +100,10 @@ function decodeStateParam (value) {
   return JSON.parse(atob(value))
 }
 
+function redirectUrl (state) {
+  return state.routing.locationBeforeTransitions.query.redirect || '/'
+}
+
 let lock
 
 export function login () {
@@ -108,7 +113,7 @@ export function login () {
     }
     dispatch(showLock())
     // Redirect parameter https://github.com/mjrussell/redux-auth-wrapper
-    const redirect = getState().routing.locationBeforeTransitions.query.redirect || '/'
+    const redirect = redirectUrl(getState())
 
     // Store redirect path in oauth state parameter
     // https://auth0.com/docs/tutorials/redirecting-users#using-the-state-parameter
@@ -132,7 +137,6 @@ export function logout () {
 }
 
 export function initAuth () {
-  // TODO: Handle token expry
   return (dispatch, getState) => {
     if (!USE_AUTH || lock) return
     dispatch(lockInit())
@@ -140,6 +144,7 @@ export function initAuth () {
     handleAuthenticated(dispatch)
     handleError(dispatch)
     handleHide(dispatch, getState)
+    dispatch(handleExpired())
   }
 }
 
@@ -171,6 +176,23 @@ function handleAuthenticated (dispatch) {
       if (redirect) dispatch(push(redirect))
     })
   })
+}
+
+function handleExpired () {
+  return (dispatch, getState) => {
+    const {auth} = getState()
+    if (auth.get('token')) {
+      const decoded = decode(auth.get('token'))
+      if (new Date() > new Date(decoded.exp * 1000)) {
+        dispatch(logout())
+        dispatch(push(redirectUrl(getState())))
+      } else {
+        setTimeout(() => dispatch(handleExpired()),
+          +(new Date(decoded.exp * 1000)) - +(new Date())
+        )
+      }
+    }
+  }
 }
 
 function handleError (dispatch) {

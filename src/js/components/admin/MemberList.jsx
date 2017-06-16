@@ -9,9 +9,11 @@ import {
 import {
   Button,
   Col,
-  Form
+  Form,
+  Row
 } from 'react-bootstrap'
 import { Map } from 'immutable'
+import { Link } from 'react-router'
 
 export default class MemberList extends Component {
 
@@ -44,13 +46,15 @@ export default class MemberList extends Component {
     const members = []
     this.state.members.forEach((member, index) => {
       members.push(
-        <div key={`member-${index}`}>{`${member.name}: ${member.email}`}</div>
+        <div key={`member-${index}`}>
+          <Link to={`/members/${member.id}`}>{`${member.name}: ${member.email}`}
+          </Link>
+        </div>
       )
     })
     return (
       <div>
-        <h2> Membership List </h2>
-        {members}
+        <Row>
         <Col sm={4}>
           <h2>Add Member</h2>
           <Form horizontal onSubmit={(e) => e.preventDefault()}>
@@ -103,6 +107,9 @@ export default class MemberList extends Component {
             <Button type="submit" onClick={(e) => this.submitForm(e, 'admin', '/admin')}>Add Admin</Button>
           </Form>
         </Col>
+        </Row>
+        <h2> Membership List </h2>
+        {members}
       </div>
     )
   }

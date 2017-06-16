@@ -16,6 +16,18 @@ class Navigation extends Component {
     this.props.dispatch(fetchMember())
   }
 
+  componentWillReceiveProps(nextProps){
+    const auth_user = nextProps.auth.get('user', null)
+    if(auth_user !== null){
+      const db_member = nextProps.member.getIn(['user', 'data'], null)
+      if (db_member === null || db_member.get('email_address') !== auth_user.email){
+        if (!nextProps.member.getIn(['user', 'loading']) && nextProps.member.getIn(['user', 'error']) === null){
+          this.props.dispatch(fetchMember())
+        }
+      }
+    }
+  }
+
   render () {
     let admin = false
     const memberData = this.props.member.getIn(['user', 'data'], null)
