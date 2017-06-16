@@ -20,7 +20,8 @@ class ElectionDetail extends Component {
     super(props)
     this.state = {
       election: Map({name: '', candidates: List(), number_winners: 1, 'votes_cast': 0}),
-      inSubmission: false
+      inSubmission: false,
+      results: Map()
     }
   }
 
@@ -51,6 +52,12 @@ class ElectionDetail extends Component {
     this.state.election.get('candidates').forEach((candidate, index) => {
       candidates.push(<div key={`candidate-${index}`}>{candidate.get('name')}</div>)
     })
+    const winners = []
+    this.state.results.get('winners', List()).forEach((winner, index) => {
+      winners.push(<div key={index}>{winner}</div>)
+    })
+
+
     return (
       <div>
         <h2> Election </h2>
@@ -60,39 +67,11 @@ class ElectionDetail extends Component {
         {candidates}
         { admin &&
         <div>
-          <Col sm={4}>
-            <h2>Add Election</h2>
-            <Form horizontal onSubmit={(e) => e.preventDefault()}>
-              <FieldGroup
-                formKey="name"
-                type="text"
-                label="Election Name"
-                value={this.state.election.name}
-                onFormValueChange={(formKey, value) => this.updateForm('election', formKey, value)}
-                required
-              />
-              <FieldGroup
-                formKey="number_winners"
-                type="number"
-                step="1"
-                min="1"
-                label="Number of winners"
-                value={this.state.election.number_winners}
-                onFormValueChange={(formKey, value) => this.updateForm('election', formKey, value)}
-                required
-              />
-              <FieldGroup
-                formKey="candidate_list"
-                type="text"
-                label="Candidate Emails (comma-separated)"
-                value={this.state.election.candidate_list}
-                onFormValueChange={(formKey, value) => this.updateForm('election', formKey, value)}
-                required
-              />
-              <Button type="submit" onClick={(e) => this.submitForm(e, 'election', '/election')}>Add Election</Button>
-            </Form>
-          </Col>
+          <Button type="submit" onClick={(e) => this.countVotes(e)}>Count The Vote</Button>
+          <h3> Winners</h3>
+          {winners}
         </div>
+
         }
       </div>
     )
@@ -116,6 +95,22 @@ class ElectionDetail extends Component {
     try {
       await membershipApi(HTTP_POST, endpoint, this.state[name])
       this.getElections()
+    } catch (err) {
+      return logError('Error loading test', err)
+    } finally {
+      this.setState({inSubmission: false})
+    }
+  }
+
+  async countVotes (e) {
+    e.preventDefault()
+    if (this.state.inSubmission) {
+      return
+    }
+    this.setState({inSubmission: true})
+    try {
+      const results = await membershipApi(HTTP_GET, '/election/count', {'id': this.props.params.electionId})
+      this.setState({results: fromJS(results)})
     } catch (err) {
       return logError('Error loading test', err)
     } finally {

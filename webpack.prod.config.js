@@ -50,8 +50,7 @@ module.exports = {
     new webpack.EnvironmentPlugin([
       'NODE_ENV',
       'USE_AUTH',
-      'ALEX_API_URL',
-      'DATA_INGESTION_API_URL',
+      'MEMBERSHIP_API_URL',
       'AUTH0_CLIENT_ID',
       'AUTH0_DOMAIN'
     ]),
@@ -64,9 +63,6 @@ module.exports = {
       {
         from: './src/index.html',
         to: 'index.html'
-      },
-      {
-        from: '_redirects'
       }
     ])
   ],

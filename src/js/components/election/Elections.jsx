@@ -43,7 +43,7 @@ class Elections extends Component {
     const elections = []
     this.state.elections.forEach((election, id) => {
       elections.push(
-        <Link key={`election-${id}`} to={`/elections/${id}/`}>{election}</Link>
+        <div key={`election-${id}`}><Link to={`/elections/${id}/`}>{election}</Link></div>
       )
     })
     let admin = false

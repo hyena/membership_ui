@@ -8,8 +8,7 @@ export const INITIAL_STATE = Map({
     data: null,
     loading: false,
     err: null
-  }),
-  memberList: Map
+  })
 })
 
 function member (state = INITIAL_STATE, action) {
