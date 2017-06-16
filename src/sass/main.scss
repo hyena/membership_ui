@@ -1,0 +1,41 @@
+@import "membership";
+
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#root {
+  height: 100%;
+}
+
+.app-container {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+.nav-container {
+  height: 72px;
+}
+
+.content-container {
+  display: flex;
+  flex: 1;
+}
+
+.content {
+  width: 100%;
+}
+
+.glyphButton {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  outline: none;
+  border: 0;
+  background: transparent;
+}
+
