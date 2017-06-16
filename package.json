@@ -13,14 +13,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jessebutterfield/membership_ui.git"
+    "url": "git+https://github.com/DSASanFrancisco/membership_ui.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/jessebutterfield/membership_ui/issues"
+    "url": "https://github.com/DSASanFrancisco/membership_ui/issues"
   },
-  "homepage": "https://github.com/jessebutterfield/membership_ui#readme",
+  "homepage": "https://github.com/DSASanFrancisco/membership_ui#readme",
   "devDependencies": {
     "babel-core": "^6.18.0",
     "babel-loader": "^6.2.7",
