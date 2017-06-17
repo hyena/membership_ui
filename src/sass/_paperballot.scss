@@ -29,6 +29,7 @@
         > span {
             display: inline-block;
             vertical-align: middle;
+            text-align: center;
             font-size: 1.5em;
             word-break: break-all;
         }
@@ -42,4 +43,32 @@ span.rank-box {
     width: $box-size;
     border: .1cm solid black;
     margin: 1cm;
+
+    &.warning {
+        outline: 4px solid gold;
+    }
+
+    > input[type='text'] {
+        padding: .05em;
+        display: block;
+        text-align: center;
+        height: 100%;
+        width: 100%;
+        font-size: 1.2em;
+    }
+
+    > label {
+        position: relative;
+        text-align: center;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1.2em;
+    }
+}
+
+.validation-box {
+    td, th {
+        padding: 5px;
+        border: 1px solid black;
+    }
 }

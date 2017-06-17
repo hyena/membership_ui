@@ -11,6 +11,7 @@ import Committees from './components/committee/Committees'
 import Elections from './components/election/Elections'
 import ElectionDetail from './components/election/ElectionDetail'
 import NotFound from './components/common/NotFound'
+import EnterVote from './components/election/EnterVote'
 import PrintBallots from './components/election/PrintBallots'
 import SignInKiosk from './components/election/SignInKiosk'
 import Vote from './components/election/Vote'
@@ -49,6 +50,7 @@ class Routes extends Component {
             <Route path="admin" component={MemberList} />
             <Route path="elections" component={Elections} />
             <Route path="elections/:electionId" component={ElectionDetail} />
+            <Route path="admin/elections/:electionId/vote" component={EnterVote} />
             <Route path="elections/:electionId/print" component={PrintBallots} />
             <Route path="elections/:electionId/signin" component={SignInKiosk} />
             <Route path="vote/:electionId" component={Vote} />
