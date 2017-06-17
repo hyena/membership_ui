@@ -7,8 +7,9 @@ import {
 } from '../../util/util'
 import { fromJS } from 'immutable'
 import { Link } from 'react-router'
-import AddRole from '../admin/AddRole'
-import AddMeeting from '../admin/AddMeeting'
+import AddRole from '../admin/AddMeeting'
+import AddMeeting from '../admin/AddRole'
+import AddEligibleVoter from '../admin/AddEligibleVoter'
 
 class Member extends Component {
 
@@ -78,6 +79,11 @@ class Member extends Component {
              memberId={this.props.params.memberId ? this.props.params.memberId : this.state.member.get('id')}
              refresh={() => this.fetchMemberData()}
            />
+           <AddEligibleVoter
+             admin={admin}
+             memberId={this.props.params.memberId ? this.props.params.memberId : this.state.member.get('id')}
+             refresh={() => this.fetchMemberData()}
+           />
           </div>
         }
       </div>
@@ -108,7 +114,6 @@ class Member extends Component {
     let admin = false
     if (memberData !== null) {
       memberData.get('roles').forEach((role) => {
-        console.log('here')
         if (role.get('role') === 'admin' && role.get('committee') === 'general') {
           admin = true
         }

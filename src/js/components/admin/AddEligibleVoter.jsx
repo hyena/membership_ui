@@ -14,20 +14,20 @@ import {
 } from 'react-bootstrap'
 import { fromJS, Map } from 'immutable'
 
-export default class AddMeeting extends Component {
+export default class AddEligibleVoter extends Component {
 
   constructor (props) {
     super(props)
     this.state = {
-      meetings: Map(),
-      attendee: Map({member_id: this.props.memberId, meeting_id: ''}),
+      elections: Map(),
+      eligibleVoter: Map({member_id: this.props.memberId, election_id: ''}),
       inSubmission: false
     }
   }
 
   componentDidMount () {
     //TODO(jesse): hide the form behind an edit button to save bandwith for admins
-    this.getMeetings()
+    this.getElections()
   }
 
   updateForm (name, formKey, value) {
@@ -47,19 +47,19 @@ export default class AddMeeting extends Component {
         <Row>
           <Col sm={4}>
             <Form horizontal onSubmit={(e) => e.preventDefault()}>
-              <h2>Add Meeting Attendance</h2>
+              <h2>Add EligibleVoter</h2>
               <FieldGroup
-                formKey="meeting_id"
+                formKey="election_id"
                 componentClass="select"
-                label="Meeting"
-                options={this.state.meetings}
-                placeHolder="Select a meeting"
+                label="Election"
+                options={this.state.elections}
+                placeHolder="Select an election"
                 optionMap
-                value={this.state.attendee.get('meeting_id')}
-                onFormValueChange={(formKey, value) => this.updateForm('attendee', formKey, value)}
+                value={this.state.eligibleVoter.get('election_id')}
+                onFormValueChange={(formKey, value) => this.updateForm('eligibleVoter', formKey, value)}
                 required
               />
-              <Button type="submit" onClick={(e) => this.submitForm(e, 'attendee', '/member/attendee')}>Add Meeting</Button>
+              <Button type="submit" onClick={(e) => this.submitForm(e, 'eligibleVoter', '/election/voter')}>Add Voter</Button>
             </Form>
           </Col>
         </Row>
@@ -67,12 +67,12 @@ export default class AddMeeting extends Component {
     )
   }
 
-  async getMeetings () {
+  async getElections () {
     try {
-      const results = await membershipApi(HTTP_GET, `/meeting/list`)
-      this.setState({meetings: fromJS(results)})
+      const results = await membershipApi(HTTP_GET, `/election/list`)
+      this.setState({elections: fromJS(results)})
     } catch (err) {
-      return logError('Error loading meetings', err)
+      return logError('Error loading election', err)
     }
   }
 
@@ -86,7 +86,7 @@ export default class AddMeeting extends Component {
       await membershipApi(HTTP_POST, endpoint, this.state[name])
       this.props.refresh()
     } catch (err) {
-      return logError('Error adding attendee', err)
+      return logError('Error loading test', err)
     } finally {
       this.setState({inSubmission: false})
     }

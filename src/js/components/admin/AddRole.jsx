@@ -14,20 +14,20 @@ import {
 } from 'react-bootstrap'
 import { fromJS, Map } from 'immutable'
 
-export default class AddMeeting extends Component {
+export default class AddRole extends Component {
 
   constructor (props) {
     super(props)
     this.state = {
-      meetings: Map(),
-      attendee: Map({member_id: this.props.memberId, meeting_id: ''}),
+      committees: Map(),
+      newRole: Map({member_id: this.props.memberId, committee_id: '0', role:'member'}),
       inSubmission: false
     }
   }
 
   componentDidMount () {
     //TODO(jesse): hide the form behind an edit button to save bandwith for admins
-    this.getMeetings()
+    this.getCommittees()
   }
 
   updateForm (name, formKey, value) {
@@ -47,18 +47,27 @@ export default class AddMeeting extends Component {
         <Row>
           <Col sm={4}>
             <Form horizontal onSubmit={(e) => e.preventDefault()}>
-              <h2>Add Meeting Attendance</h2>
+              <h2>Add Role</h2>
               <FieldGroup
-                formKey="meeting_id"
+                formKey="role"
                 componentClass="select"
-                label="Meeting"
-                options={this.state.meetings}
-                optionMap
-                value={this.state.attendee.get('meeting_id')}
-                onFormValueChange={(formKey, value) => this.updateForm('attendee', formKey, value)}
+                options={['admin','member']}
+                label="Role"
+                value={this.state.newRole.get('role')}
+                onFormValueChange={(formKey, value) => this.updateForm('newRole', formKey, value)}
                 required
               />
-              <Button type="submit" onClick={(e) => this.submitForm(e, 'attendee', '/member/attendee')}>Add Role</Button>
+              <FieldGroup
+                formKey="committee_id"
+                componentClass="select"
+                label="Committee"
+                options={this.state.committees.set(0, 'General')}
+                optionMap
+                value={this.state.newRole.get('committee_id')}
+                onFormValueChange={(formKey, value) => this.updateForm('newRole', formKey, value)}
+                required
+              />
+              <Button type="submit" onClick={(e) => this.submitForm(e, 'newRole', '/member/role')}>Add Role</Button>
             </Form>
           </Col>
         </Row>
@@ -66,10 +75,10 @@ export default class AddMeeting extends Component {
     )
   }
 
-  async getMeetings () {
+  async getCommittees () {
     try {
-      const results = await membershipApi(HTTP_GET, `/meeting/list`)
-      this.setState({meetings: fromJS(results)})
+      const results = await membershipApi(HTTP_GET, `/committee/list`)
+      this.setState({committees: fromJS(results)})
     } catch (err) {
       return logError('Error loading test', err)
     }

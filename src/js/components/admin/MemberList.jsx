@@ -84,28 +84,6 @@ export default class MemberList extends Component {
             />
             <Button type="submit" onClick={(e) => this.submitForm(e, 'newMember', '/member')}>Add Member</Button>
           </Form>
-          <Form horizontal onSubmit={(e) => e.preventDefault()}>
-            <h2> Make Admin</h2>
-            <FieldGroup
-              formKey="email_address"
-              type="text"
-              label="Email"
-              value={this.state.admin.email_address}
-              onFormValueChange={(formKey, value) => this.updateForm('admin', formKey, value)}
-              required
-            />
-            <FieldGroup
-              formKey="committee"
-              componentClass="select"
-              label="Committee"
-              options={Map(this.state.committees).set(0, 'General')}
-              optionMap
-              value={this.state.admin.committee}
-              onFormValueChange={(formKey, value) => this.updateForm('admin', formKey, value)}
-              required
-            />
-            <Button type="submit" onClick={(e) => this.submitForm(e, 'admin', '/admin')}>Add Admin</Button>
-          </Form>
         </Col>
         </Row>
         <h2> Membership List </h2>
