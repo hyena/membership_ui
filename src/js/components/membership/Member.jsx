@@ -56,7 +56,6 @@ class Member extends Component {
     })
 
     const admin = this.isAdmin()
-    console.log(admin)
     return (
       <div>
         <h2>Member Info</h2>

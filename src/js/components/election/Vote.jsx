@@ -23,7 +23,8 @@ class Vote extends Component {
       unranked: List(),
       ranked: List(),
       inSubmission: false,
-      dragging: null
+      dragging: null,
+      result: null
     }
   }
 
@@ -87,12 +88,12 @@ class Vote extends Component {
       candidates.push(
         <div
           key={`candidate-${index}`}
-          onDrop={(event) => this.drop(event, 'unranked', index)}
-          onDragOver={(event) => this.allowDrop(event)}
-          onDragEnter={this.highlight()}
-          onDragLeave={this.unhighlight()}
-          draggable={true}
-          onDragStart={(event) => this.dragStart('unranked', index)}
+            onDrop = {(event) => this.drop(event, 'unranked', index)}
+            onDragOver={(event) => this.allowDrop(event)}
+            onDragEnter={(event) => this.highlight()}
+            onDragLeave={(event) => this.unhighlight()}
+            draggable={this.state.result === null}
+            onDragStart={(event) => this.dragStart('unranked', index)}
         >
           <Label>{candidate.get('name')}</Label>
         </div>)
@@ -103,13 +104,12 @@ class Vote extends Component {
       votes.push(
         <div
           key={`candidate-${index}`}
-          onDrop={(event) => this.drop(event, 'ranked', index)}
-          onDragOver={(event) => this.allowDrop(event)}
-          onDragEnter={this.highlight()}
-          onDragLeave={this.unhighlight()}
-          draggable={true}
-          onDragStart={(event) => this.dragStart('ranked', index)
-          }
+          onDrop = {(event) => this.drop(event, 'ranked', index)}
+          onDragOver = {(event) => this.allowDrop(event)}
+          onDragEnter = {(event) => this.highlight()}
+          onDragLeave = {(event) => this.unhighlight()}
+          draggable = {this.state.result === null}
+          onDragStart = {(event) => this.dragStart('ranked', index)}
         >
           <Label>{candidate.get('name')}</Label>
         </div>)
@@ -119,12 +119,15 @@ class Vote extends Component {
         <h2> Election </h2>
         <h3> {this.state.election.get('name')} </h3>
         <h3>Number of positions {this.state.election.get('number_winners')} </h3>
-        <h3>Votes cast {this.state.election.get('votes_cast')} </h3>
         <div>
+          <p> To vote drag the candidates from the box on the left to the box on the right and place
+            them in the desired order. Press the vote button when finished. Currently this does not
+            work on phones, but we are working on a solution.</p>
           <Col sm={4} className="voteBox"
                onDrop={(event) => this.drop(event, 'unranked', this.state.unranked.size)}
                onDragOver={(event) => this.allowDrop(event)}
           >
+            <h2>Candidates</h2>
             {candidates}
           </Col>
           <Col sm={4}
@@ -132,9 +135,17 @@ class Vote extends Component {
                onDrop={(event) => this.drop(event, 'ranked', this.state.ranked.size)}
                onDragOver={(event) => this.allowDrop(event)}
           >
+            <h2>Ballot</h2>
             {votes}
           </Col>
-            <Button type="submit" onClick={(e) => this.vote()}>VOTE</Button>
+          {this.state.result === null ?
+            <Button type="submit" onClick={(e) => this.vote()}>VOTE</Button> :
+            <p>Congratulations. You've successfully voted. Your confirmation number is
+              <strong> {this.state.result.ballot_id}</strong>. Save this number if you'd like to
+              confirm your vote was counted correctly after the election, but keep it private
+              or everybody will be able to see how you voted.
+            </p>
+          }
         </div>
       </div>
     )
@@ -153,6 +164,9 @@ class Vote extends Component {
   }
 
   async vote () {
+    if (!confirm("Are you sure you want to submit your vote now? This cannot be undone.")){
+      return Promise()
+    }
     if (this.state.inSubmission) {
       return Promise()
     }
@@ -162,7 +176,8 @@ class Vote extends Component {
       rankings: this.state.ranked.map(c => c.get('id'))
     }
     try {
-      await membershipApi(HTTP_POST, '/vote', params)
+      const result = await membershipApi(HTTP_POST, '/vote', params)
+      this.setState({result:result})
     } catch (err) {
       return logError('Error submitting vote', err)
     } finally {
