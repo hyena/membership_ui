@@ -22,7 +22,6 @@ const lockOptions = {
   },
   avatar: null,
   theme: {
-    logo: 'https://lh5.googleusercontent.com/zQ3IUtn79QWKsuiVdUP5fcX7dpituCpQgh3F3PJ7-OiNTY6WZqX89-el77y4fHHhUBNHAF8UewEzJsw=w1441-h785',
     primaryColor: '#ED3124'
   },
   languageDictionary: {

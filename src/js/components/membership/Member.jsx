@@ -7,6 +7,9 @@ import {
 } from '../../util/util'
 import { fromJS } from 'immutable'
 import { Link } from 'react-router'
+import AddRole from '../admin/AddMeeting'
+import AddMeeting from '../admin/AddRole'
+import AddEligibleVoter from '../admin/AddEligibleVoter'
 
 class Member extends Component {
 
@@ -52,7 +55,8 @@ class Member extends Component {
       )
     })
 
-
+    const admin = this.isAdmin()
+    console.log(admin)
     return (
       <div>
         <h2>Member Info</h2>
@@ -63,6 +67,25 @@ class Member extends Component {
         {meetings}
         <h2>Eligible Votes</h2>
         {votes}
+        {admin &&
+         <div>
+            <AddRole
+              admin={admin}
+              memberId={this.props.params.memberId ? this.props.params.memberId : this.state.member.get('id')}
+              refresh={() => this.fetchMemberData()}
+            />
+           <AddMeeting
+             admin={admin}
+             memberId={this.props.params.memberId ? this.props.params.memberId : this.state.member.get('id')}
+             refresh={() => this.fetchMemberData()}
+           />
+           <AddEligibleVoter
+             admin={admin}
+             memberId={this.props.params.memberId ? this.props.params.memberId : this.state.member.get('id')}
+             refresh={() => this.fetchMemberData()}
+           />
+          </div>
+        }
       </div>
     )
   }
@@ -84,6 +107,19 @@ class Member extends Component {
         return logError('Error loading member details', err)
       }
     }
+  }
+
+  isAdmin() {
+    const memberData = this.props.member.getIn(['user', 'data'], null)
+    let admin = false
+    if (memberData !== null) {
+      memberData.get('roles').forEach((role) => {
+        if (role.get('role') === 'admin' && role.get('committee') === 'general') {
+          admin = true
+        }
+      })
+    }
+    return admin
   }
 
 }
