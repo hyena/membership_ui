@@ -10,6 +10,7 @@ import { Link } from 'react-router'
 import AddRole from '../admin/AddMeeting'
 import AddMeeting from '../admin/AddRole'
 import AddEligibleVoter from '../admin/AddEligibleVoter'
+var ReactMarkdown = require('react-markdown');
 
 class Member extends Component {
 
@@ -60,6 +61,9 @@ class Member extends Component {
       <div>
         <h2>Member Info</h2>
         <div>{`${memberData.getIn(['info', 'first_name'])} ${memberData.getIn(['info', 'last_name'])}`}</div>
+        <p><img src={`/images/member-photos/${memberData.get('id')}.jpg`} alt={`${memberData.getIn(['info', 'first_name'])} ${memberData.getIn(['info', 'last_name'])}'s photo`} /></p>
+        <h3>Biography</h3>
+        <ReactMarkdown source={memberData.getIn(['info', 'biography'])} />
         <h2>Committees</h2>
         {roles}
         <h2>Meetings attended</h2>
