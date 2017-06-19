@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
 import {
   Navbar,
   Nav,
@@ -7,24 +8,25 @@ import {
 } from 'react-bootstrap'
 import { fetchMember } from '../../redux/actions/memberActions'
 import { LinkContainer } from 'react-router-bootstrap'
+import styles from './styles.scss'
 
 import UserView from './UserView.jsx'
 
 class Navigation extends Component {
 
   componentDidMount () {
-    this.props.dispatch(fetchMember())
+    this.props.fetchMember()
   }
 
-  componentWillReceiveProps(nextProps){
-    const auth_user = nextProps.auth.get('user', null)
-    if(auth_user !== null){
-      const db_member = nextProps.member.getIn(['user', 'data'], null)
-      if (db_member === null || db_member.get('email_address') !== auth_user.email){
-        if (!nextProps.member.getIn(['user', 'loading']) && nextProps.member.getIn(['user', 'error']) === null){
-          this.props.dispatch(fetchMember())
-        }
-      }
+  componentWillReceiveProps (nextProps) {
+    const authUser = nextProps.auth.get('user', null)
+    if (authUser === null) {
+      return
+    }
+    const dbMember = nextProps.member.getIn(['user', 'data'], null)
+    if ((dbMember === null || dbMember.get('email_address') !== authUser.email) &&
+      (!nextProps.member.getIn(['user', 'loading']) && nextProps.member.getIn(['user', 'error']) === null)) {
+      this.props.fetchMember()
     }
   }
 
@@ -38,15 +40,16 @@ class Navigation extends Component {
         }
       })
     }
+    console.log(styles)
     return (
-      <Navbar fluid className="navigation">
+      <Navbar fixedTop fluid>
         <Navbar.Header>
           <Navbar.Brand>
             <div className="logo"></div>
           </Navbar.Brand>
         </Navbar.Header>
 
-        <Nav className="left-nav">
+        <Nav styleName="app-nav">
 
           <LinkContainer to="/members">
             <NavItem eventKey="members">Member</NavItem>
@@ -79,4 +82,12 @@ class Navigation extends Component {
   }
 }
 
-export default connect((state) => state)(Navigation)
+export default connect(
+  state => ({
+    auth: state.auth,
+    member: state.member
+  }),
+  dispatch => bindActionCreators({
+    fetchMember
+  }, dispatch)
+  )(Navigation)
