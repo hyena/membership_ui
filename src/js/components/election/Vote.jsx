@@ -134,10 +134,11 @@ class Vote extends Component {
       )}
     </ul>
     return <div>
-      <p>To add a candidate to your rankings, click on an unranked candidate and they will be added to the bottom of your
-        list. To swap the order of two ranked candidates, click on one and then the other and they will swap places. Rank
-        as many candidates as you'd like. When you're done press the vote button at bottom. Your confirmation number will
-        appear below.</p>
+      <ul>
+        <li>Click unranked candidates to add them in order</li>
+        <li>Swap 2 ranked candidates by clicking on their names</li>
+        <li>Rank as many as you wish</li>
+      </ul>
       <Form onSubmit={(e) => e.stopPropagation()}>
         <div className="text-center"><strong>Ranked</strong></div>
         {rankedCandidates}
