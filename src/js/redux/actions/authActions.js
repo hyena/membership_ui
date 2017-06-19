@@ -22,6 +22,7 @@ const lockOptions = {
   },
   avatar: null,
   theme: {
+    logo: `${window.location.origin}/images/dsasf-logo-bridge.png`,
     primaryColor: '#ED3124'
   },
   languageDictionary: {
