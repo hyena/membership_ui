@@ -1,23 +1,10 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import { membershipApi } from '../../services/membership'
-import FieldGroup from '../common/FieldGroup'
-import {
-  HTTP_GET,
-  HTTP_POST,
-  logError
-} from '../../util/util'
-import {
-  Button,
-  Col,
-  Form,
-  FieldControl,
-  MenuItem,
-  Label,
-  SplitButton
-} from 'react-bootstrap'
-import _ from 'lodash'
-import { fromJS, Map, List } from 'immutable'
+import React, {Component} from "react";
+import {connect} from "react-redux";
+import {membershipApi} from "../../services/membership";
+import {HTTP_GET, HTTP_POST, logError} from "../../util/util";
+import {Button, ButtonGroup, Col, Form, FieldControl, Label} from "react-bootstrap";
+import _ from "lodash";
+import {fromJS, Map, List} from "immutable";
 
 class Vote extends Component {
 
@@ -117,44 +104,42 @@ class Vote extends Component {
   }
 
   renderForMobile () {
-    const rankedCandidates = <ol>
+    const rankedCandidates = <ol className="ranked-candidates">
       {this.state.ranked.map((candidate, index) =>
         <li key={`ranked-${index}`}>
-          <SplitButton
-            title={candidate.get('name')}
-            id={`candidate-${candidate.get('id')}`}
-            bsStyle={this.state.rankedSelected === index ? 'info' : 'primary'}
-            onClick={(e) => {
-              this.selectRanked(index)
-            }}
-            onSelect={(key, e) => {
-              switch (key) {
-                case '1':
-                  this.removeFromRanked(index)
-                  break
-                default:
-              }
-            }}
-          >
-            <MenuItem eventKey="1">Remove from Ranked</MenuItem>
-          </SplitButton>
+          <ButtonGroup justified bsSize="large">
+            <a
+              id={`swap-candidate-${candidate.get('id')}`}
+              className={`btn btn-success${this.state.rankedSelected === index ? ' active hover' : ''}`}
+              onClick={(e) => {
+                this.selectRanked(index)
+              }}
+              >{candidate.get('name')}</a>
+            <a
+              className='btn btn-danger'
+              id={`drop-candidate-${candidate.get('id')}`}
+              onClick={(e) => {
+                this.removeFromRanked(index)
+              }}
+            >Unrank</a>
+          </ButtonGroup>
         </li>
       )}
     </ol>
-    const unrankedCandidates = <ul>
+    const unrankedCandidates = <ul className="unranked-candidates">
       {this.state.unranked.map((candidate, index) =>
         <li key={`unranked-${index}`}>
-          <Button onClick={(e) => this.addToRanked(index)}>{candidate.get('name')}</Button>
+          <Button block bsSize="large" onClick={(e) => this.addToRanked(index)}>{candidate.get('name')}</Button>
         </li>
       )}
     </ul>
     return <div>
       <Form onSubmit={(e) => e.stopPropagation()}>
-        <div>Ranked:</div>
+        <div className="text-center"><strong>Ranked</strong></div>
         {rankedCandidates}
-        <div>Unranked:</div>
+        <div className="text-center"><strong>Unranked</strong></div>
         {unrankedCandidates}
-        <Button block onClick={(e) => this.vote()}>VOTE</Button>
+        <Button block bsSize="large" bsStyle="primary" onClick={(e) => this.vote()}>VOTE</Button>
       </Form>
     </div>
   }
