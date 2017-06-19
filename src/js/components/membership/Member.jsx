@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { membershipApi } from '../../services/membership'
 import {
   HTTP_GET,
+  HTTP_POST,
   logError
 } from '../../util/util'
 import { fromJS } from 'immutable'
@@ -10,6 +11,14 @@ import { Link } from 'react-router'
 import AddRole from '../admin/AddMeeting'
 import AddMeeting from '../admin/AddRole'
 import AddEligibleVoter from '../admin/AddEligibleVoter'
+import {
+  Button,
+  ControlLabel,
+  Form,
+  FormControl,
+  FormGroup
+} from 'react-bootstrap'
+
 
 class Member extends Component {
 
@@ -17,7 +26,8 @@ class Member extends Component {
     super(props)
     this.state = {
       member: null,
-      inSubmission: false
+      inSubmission: false,
+      meetingShortId: '',
     }
   }
 
@@ -73,6 +83,16 @@ class Member extends Component {
         <h2>Committees</h2>
         {roles}
         <h2>Meetings attended</h2>
+        <Form inline onSubmit={(e) => {this.attendMeeting(e)}}>
+          <FormGroup controlId="formInlineName" >
+            <ControlLabel>Meeting Code</ControlLabel>
+            {' '}
+            <FormControl type="number" step="1" onChange={(e) => this.setState({meetingShortId: e.target.value})}/>
+          </FormGroup>
+          <Button type="submit">
+            Check In
+          </Button>
+        </Form>
         {meetings}
         <h2>Eligible Votes</h2>
         {votes}
@@ -129,6 +149,23 @@ class Member extends Component {
       })
     }
     return admin
+  }
+
+  async attendMeeting (e) {
+    e.preventDefault()
+    if (this.state.inSubmission) {
+      return
+    }
+    this.setState({inSubmission: true})
+    try {
+      await membershipApi(HTTP_POST, '/meeting/attend', {'meeting_short_id': this.state.meetingShortId})
+      this.setState({meetingShortId: ''})
+      this.fetchMemberData()
+    } catch (err) {
+      return logError('Error adding attendee', err)
+    } finally {
+      this.setState({inSubmission: false})
+    }
   }
 
 }
