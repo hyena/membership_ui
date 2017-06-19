@@ -2,6 +2,14 @@
 
 .mainNav {
 	background: $brand-red;
+	button {
+		.icon-bar {
+			background-color: white !important;
+		}
+		&:hover, &:focus {
+			background-color: black !important;
+		}
+	}
 }
 
 .dsaNavItem {

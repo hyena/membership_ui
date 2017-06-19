@@ -74,7 +74,7 @@ class Navigation extends Component {
             }
             { admin &&
               <LinkContainer to="/admin">
-                <NavItem>Admin</NavItem>
+                <NavItem className="dsaNavItem">Admin</NavItem>
               </LinkContainer>
             }
 
@@ -85,7 +85,7 @@ class Navigation extends Component {
               <UserView />
             </NavItem>
             <LinkContainer to="/logout">
-              <NavItem className="logout">Logout</NavItem>
+              <NavItem className="dsaNavItem">Logout</NavItem>
             </LinkContainer>
           </Nav>
         </Navbar.Collapse>
