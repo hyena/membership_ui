@@ -17,7 +17,7 @@ class PaperBallot extends Component {
     }
     this.electionId = this.props.election.get('id')
     const candidates = this.props.election.get('candidates')
-    const seed = this.electionId + '_' + this.props.ballotKey
+    const seed = this.electionId + '_' + String(this.props.ballotKey)
     const rng = seedrandom(seed)
     this.shuffledCandidates = candidates.sortBy(rng)
   }

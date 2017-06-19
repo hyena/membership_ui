@@ -28,6 +28,7 @@ class PrintBallots extends Component {
         number_ballots: 0
       },
       election: Map({
+        id: '',
         name: '',
         candidates: List()
       })
@@ -97,6 +98,7 @@ class PrintBallots extends Component {
   async getElection (id) {
     try {
       const result = await membershipApi(HTTP_GET, `/election`, {'id': id})
+      result['id'] = id
       this.setState({election: fromJS(result)})
     } catch (err) {
       return logError(`Error loading election /election?id=${id}`, err)
