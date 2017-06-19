@@ -9,6 +9,7 @@ import {
 } from '../../util/util'
 import {
   Button,
+  ButtonGroup,
   Col,
   Row,
   Form
@@ -58,10 +59,11 @@ class Elections extends Component {
           <Link to={`/elections/${id}/`}>{electionName}</Link>
           </Col>
           {admin &&
-            <Col smOffset={2} sm={5}>
+            <ButtonGroup>
               <Button><Link to={`/elections/${id}/print`}>Print Ballots</Link></Button>
+              <Button><Link key={`enter-ballots-${id}`} to={`/admin/elections/${id}/vote`}>Enter Ballots</Link></Button>
               <Button><Link to={`/elections/${id}/signin`}>Sign In Kiosk</Link></Button>
-            </Col>
+            </ButtonGroup>
           }
         </Row>
       )

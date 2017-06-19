@@ -10,6 +10,7 @@ import {
   Form,
   FormControl
 } from 'react-bootstrap'
+import { Sanitize } from '../../functional'
 import PaperBallot from './PaperBallot'
 import { membershipApi } from '../../services/membership'
 import { fromJS, List, Map } from 'immutable'
@@ -19,6 +20,7 @@ class PrintBallots extends Component {
   constructor (props) {
     super(props)
     this.state = {
+      numBallotsInput: '',
       claimedBallots: List(),
       readyToPrint: false,
       claimAndPrintForm: {
@@ -26,6 +28,7 @@ class PrintBallots extends Component {
         number_ballots: 0
       },
       election: Map({
+        id: '',
         name: '',
         candidates: List()
       })
@@ -45,18 +48,30 @@ class PrintBallots extends Component {
         <div className="print-hidden">
           <h1>Print Ballots for {this.state.election.get('name')}</h1>
           <Form inline>
-            <FormControl required
+            <label htmlFor="number_ballots">Number of ballots</label>
+            <FormControl
+              required
               id="number_ballots"
               type="text"
               maxLength="5"
               onChange={(e) => {
-                let form = this.state.claimAndPrintForm
-                form.number_ballots = parseInt(e.target.value, 10)
-                this.setState({'claim_ballots': form})
+                const numBallotsInput = Sanitize.postiveNum.sanitize(e.target.value)
+                if (numBallotsInput) {
+                  const form = this.state.claimAndPrintForm
+                  form.number_ballots = parseInt(numBallotsInput, 10)
+                  this.setState({
+                    claimAndPrintForm: form,
+                    numBallotsInput: numBallotsInput
+                  })
+                } else if (e.target.value.trim() === '') {
+                  this.setState({numBallotsInput: ''})
+                }
               }}
+              value={this.state.numBallotsInput}
               />
-            ballots
-            <Button type="submit"
+            <Button
+              type="submit"
+              disabled={!this.state.numBallotsInput}
               onClick={(e) => {
                 this.submitForm(e, 'claimAndPrintForm', '/ballot/claim').then((ballotKeys) => {
                   this.setState({claimedBallots: fromJS(ballotKeys), readyToPrint: true})
@@ -83,6 +98,7 @@ class PrintBallots extends Component {
   async getElection (id) {
     try {
       const result = await membershipApi(HTTP_GET, `/election`, {'id': id})
+      result['id'] = id
       this.setState({election: fromJS(result)})
     } catch (err) {
       return logError(`Error loading election /election?id=${id}`, err)
