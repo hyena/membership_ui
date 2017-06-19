@@ -25,7 +25,7 @@ export class Sanitize {
     }
 
     constructor(sanitize) {
-        this.sanitize = sanitize
+        this.sanitize = (str) => str === null ? null : sanitize(str)
     }
 
     compose(prev) {
@@ -37,7 +37,7 @@ export class Sanitize {
     }
 }
 
-const validatePositiveNumExp = /[1-9]?[0-9]*/
+const validatePositiveNumExp = /^[1-9]?[0-9]*$/
 
 Sanitize.trimmed = Sanitize.string((s) => s.trim())
 Sanitize.postiveNum = Sanitize.string((str) =>

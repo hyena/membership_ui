@@ -214,14 +214,21 @@ class EnterVote extends Component {
             value={this.state.ballotKeyInput}
             onChange={(e) => {
               const searchBallotKey = ballotKeySanitizer.sanitize(e.target.value)
+              const nextState = {
+                validation: EnterVote.initValidationMessage
+              }
               if (searchBallotKey) {
                 this.searchForVote(searchBallotKey)
+                nextState.ballotKeyInput = searchBallotKey
+                nextState.vote = EnterVote.blankBallot(this.props.params.electionId, searchBallotKey)
+              } else {
+                const input = EnterVote.ballotKeyInputSanitizer.sanitize(e.target.value)
+                if (input !== null) {
+                  nextState.ballotKeyInput = input
+                }
+                nextState.vote = null
               }
-              this.setState({
-                ballotKeyInput: EnterVote.ballotKeyInputSanitizer.sanitize(e.target.value),
-                vote: searchBallotKey ? EnterVote.blankBallot(this.props.params.electionId, searchBallotKey) : null,
-                validation: EnterVote.initValidationMessage
-              })
+              this.setState(nextState)
             }}
           />
           {validationBox}
