@@ -1,0 +1,24 @@
+@import "colors";
+
+.mainNav {
+	background: $brand-red;
+	button {
+		.icon-bar {
+			background-color: white !important;
+		}
+		&:hover, &:focus {
+			background-color: black !important;
+		}
+	}
+}
+
+.dsaNavItem {
+	a {
+		color: white !important;
+	}
+	&.active {
+		a {
+			background-color: black !important;
+		}
+	}
+}

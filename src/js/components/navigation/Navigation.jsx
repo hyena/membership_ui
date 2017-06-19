@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
 import {
   Navbar,
   Nav,
@@ -7,24 +8,39 @@ import {
 } from 'react-bootstrap'
 import { fetchMember } from '../../redux/actions/memberActions'
 import { LinkContainer } from 'react-router-bootstrap'
-
+import _ from 'lodash'
 import UserView from './UserView.jsx'
+
+const navMap = [
+  {
+    link: '/members',
+    label: 'Member'
+  },
+  {
+    link: '/committees',
+    label: 'Committees'
+  },
+  {
+    link: '/elections',
+    label: 'Elections'
+  }
+]
 
 class Navigation extends Component {
 
   componentDidMount () {
-    this.props.dispatch(fetchMember())
+    this.props.fetchMember()
   }
 
-  componentWillReceiveProps(nextProps){
-    const auth_user = nextProps.auth.get('user', null)
-    if(auth_user !== null){
-      const db_member = nextProps.member.getIn(['user', 'data'], null)
-      if (db_member === null || db_member.get('email_address') !== auth_user.email){
-        if (!nextProps.member.getIn(['user', 'loading']) && nextProps.member.getIn(['user', 'error']) === null){
-          this.props.dispatch(fetchMember())
-        }
-      }
+  componentWillReceiveProps (nextProps) {
+    const authUser = nextProps.auth.get('user', null)
+    if (authUser === null) {
+      return
+    }
+    const dbMember = nextProps.member.getIn(['user', 'data'], null)
+    if ((dbMember === null || dbMember.get('email_address') !== authUser.email) &&
+      (!nextProps.member.getIn(['user', 'loading']) && nextProps.member.getIn(['user', 'error']) === null)) {
+      this.props.fetchMember()
     }
   }
 
@@ -38,45 +54,49 @@ class Navigation extends Component {
         }
       })
     }
+
     return (
-      <Navbar fluid className="navigation">
+      <Navbar className="mainNav" fixedTop fluid>
         <Navbar.Header>
           <Navbar.Brand>
             <div className="logo"></div>
           </Navbar.Brand>
+          <Navbar.Toggle />
         </Navbar.Header>
+        <Navbar.Collapse>
+          <Nav>
+            {
+              _.map(navMap, nav => (
+                  <LinkContainer to={nav.link} key={nav.label}>
+                    <NavItem className="dsaNavItem">{nav.label}</NavItem>
+                  </LinkContainer>
+              ))
+            }
+            { admin &&
+              <LinkContainer to="/admin">
+                <NavItem className="dsaNavItem">Admin</NavItem>
+              </LinkContainer>
+            }
 
-        <Nav className="left-nav">
+          </Nav>
 
-          <LinkContainer to="/members">
-            <NavItem eventKey="members">Member</NavItem>
-          </LinkContainer>
-          <LinkContainer to="/committees">
-          <NavItem eventKey="committees">Committees</NavItem>
-        </LinkContainer>
-          <LinkContainer to="/elections">
-            <NavItem eventKey="elections">Elections</NavItem>
-          </LinkContainer>
-          { admin &&
-            <LinkContainer to="/admin">
-              <NavItem eventKey="admin">Admin</NavItem>
+          <Nav pullRight className="right-nav">
+            <NavItem className="profile">
+              <UserView />
+            </NavItem>
+            <LinkContainer to="/logout">
+              <NavItem className="dsaNavItem">Logout</NavItem>
             </LinkContainer>
-          }
-
-        </Nav>
-
-        <Nav pullRight className="right-nav">
-          <NavItem className="profile" eventKey="me">
-            <UserView />
-          </NavItem>
-          <LinkContainer to="/logout">
-            <NavItem className="logout" eventKey="logout">Logout</NavItem>
-          </LinkContainer>
-        </Nav>
-
+          </Nav>
+        </Navbar.Collapse>
       </Navbar>
     )
   }
 }
 
-export default connect((state) => state)(Navigation)
+export default connect(
+  state => state,
+  dispatch => bindActionCreators({
+    fetchMember
+  }, dispatch)
+  )(Navigation)
