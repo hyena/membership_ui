@@ -10,8 +10,13 @@ import {
 import {
   Button,
   Col,
-  Label
+  Form,
+  FieldControl,
+  MenuItem,
+  Label,
+  SplitButton
 } from 'react-bootstrap'
+import _ from 'lodash'
 import { fromJS, Map, List } from 'immutable'
 
 class Vote extends Component {
@@ -22,6 +27,7 @@ class Vote extends Component {
       election: Map({name: '', number_winners: 1}),
       unranked: List(),
       ranked: List(),
+      rankedSelected: null,
       inSubmission: false,
       dragging: null,
       result: null
@@ -72,19 +78,90 @@ class Vote extends Component {
     this.setState({dragging: {list: list, index: index}})
   }
 
-  render () {
-    let admin = false
-    const memberData = this.props.member.getIn(['user', 'data'], null)
-    if (memberData !== null) {
-      memberData.get('roles').forEach((role) => {
-        if (role.get('role') === 'admin' && role.get('committee') === 'general') {
-          admin = true
-        }
+  selectRanked(rankedIdx) {
+    if (this.state.rankedSelected !== null && this.state.rankedSelected !== rankedIdx) {
+      // swap the ranked choices
+      const candidateArray = this.state.ranked.toArray()
+      const prevIdx = this.state.rankedSelected
+      const candidateHighlighted = candidateArray[prevIdx]
+      const candidateClicked = candidateArray[rankedIdx]
+      candidateArray[prevIdx] = candidateClicked
+      candidateArray[rankedIdx] = candidateHighlighted
+      this.setState({
+        ranked: List(candidateArray),
+        rankedSelected: null
       })
+    } else {
+      this.setState({rankedSelected: rankedIdx})
     }
+  }
+
+  addToRanked(unrankedIdx) {
+    const candidate = this.state.unranked.get(unrankedIdx)
+    this.setState({
+      unranked: this.state.unranked.remove(unrankedIdx),
+      ranked: this.state.ranked.push(candidate)
+    })
+  }
+
+  removeFromRanked(rankedIdx) {
+    const candidate = this.state.ranked.get(rankedIdx)
+    this.setState({
+      unranked: this.state.unranked.push(candidate),
+      ranked: this.state.ranked.remove(rankedIdx)
+    })
+  }
+
+  render () {
+    return this.renderForMobile()
+  }
+
+  renderForMobile () {
+    const rankedCandidates = <ol>
+      {this.state.ranked.map((candidate, index) =>
+        <li key={`ranked-${index}`}>
+          <SplitButton
+            title={candidate.get('name')}
+            id={`candidate-${candidate.get('id')}`}
+            bsStyle={this.state.rankedSelected === index ? 'info' : 'primary'}
+            onClick={(e) => {
+              this.selectRanked(index)
+            }}
+            onSelect={(key, e) => {
+              switch (key) {
+                case '1':
+                  this.removeFromRanked(index)
+                  break
+                default:
+              }
+            }}
+          >
+            <MenuItem eventKey="1">Remove from Ranked</MenuItem>
+          </SplitButton>
+        </li>
+      )}
+    </ol>
+    const unrankedCandidates = <ul>
+      {this.state.unranked.map((candidate, index) =>
+        <li key={`unranked-${index}`}>
+          <Button onClick={(e) => this.addToRanked(index)}>{candidate.get('name')}</Button>
+        </li>
+      )}
+    </ul>
+    return <div>
+      <Form onSubmit={(e) => e.stopPropagation()}>
+        <div>Ranked:</div>
+        {rankedCandidates}
+        <div>Unranked:</div>
+        {unrankedCandidates}
+        <Button block onClick={(e) => this.vote()}>VOTE</Button>
+      </Form>
+    </div>
+  }
+
+  renderWithDragAndDrop () {
     const candidates = []
     this.state.unranked.forEach((candidate, index) => {
-      const candidateId = candidate.get('id')
       candidates.push(
         <div
           key={`candidate-${index}`}
@@ -100,7 +177,6 @@ class Vote extends Component {
     })
     const votes = []
     this.state.ranked.forEach((candidate, index) => {
-      const candidateId = candidate.get('id')
       votes.push(
         <div
           key={`candidate-${index}`}
@@ -156,7 +232,7 @@ class Vote extends Component {
       const results = await membershipApi(HTTP_GET, `/election`, {id: this.props.params.electionId})
       this.setState({
         election: Map({name: results.name, number_winners: results.number_winners}),
-        unranked: fromJS(results.candidates)
+        unranked: fromJS(_.shuffle(results.candidates))
       })
     } catch (err) {
       return logError('Error loading election', err)
