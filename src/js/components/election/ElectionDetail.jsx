@@ -19,7 +19,7 @@ class ElectionDetail extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      election: Map({name: '', candidates: List(), number_winners: 1, 'votes_cast': 0}),
+      election: Map({name: '', candidates: List(), number_winners: 1}),
       inSubmission: false,
       results: Map()
     }
@@ -63,7 +63,6 @@ class ElectionDetail extends Component {
         <h2> Election </h2>
         <h3> {this.state.election.get('name')} </h3>
         <h3>Number of positions {this.state.election.get('number_winners')} </h3>
-        <h3>Votes cast {this.state.election.get('votes_cast')} </h3>
         {candidates}
         { admin &&
         <div>

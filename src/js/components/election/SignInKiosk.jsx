@@ -20,7 +20,7 @@ class SignInKiosk extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      election: Map({name: '', candidates: List(), number_winners: 1, votes_cast: 0}),
+      election: Map({name: '', candidates: List(), number_winners: 1}),
       lastResult:'',
       voters: Map(),
       memberId: '',
