@@ -10,6 +10,7 @@ import {
 import {
   Button,
   Col,
+  Row,
   Form
 } from 'react-bootstrap'
 import { Map } from 'immutable'
@@ -40,19 +41,6 @@ class Elections extends Component {
   }
 
   render () {
-    const elections = []
-    this.state.elections.forEach((electionName, id) => {
-      elections.push(
-        <div key={`election-toolbox-${id}`} className="election-toolbox">
-          <label htmlFor={`election-${id}`}>
-            <input type="checkbox" id={`election-${id}`}/>
-            <span>{electionName}</span>
-            <Link key={`print-ballots-${id}`} to={`/elections/${id}/print`}>Print Ballots</Link>
-            <Link key={`edit-details-${id}`} to={`/elections/${id}/`}>Details</Link>
-          </label>
-        </div>
-      )
-    })
     let admin = false
     const memberData = this.props.member.getIn(['user', 'data'], null)
     if (memberData !== null) {
@@ -62,6 +50,22 @@ class Elections extends Component {
         }
       })
     }
+    const elections = []
+    this.state.elections.forEach((electionName, id) => {
+      elections.push(
+        <Row key={`election-toolbox-${id}`} className="election-toolbox">
+          <Col sm={3}>
+          <Link to={`/elections/${id}/`}>{electionName}</Link>
+          </Col>
+          {admin &&
+            <Col smOffset={2} sm={5}>
+              <Button><Link to={`/elections/${id}/print`}>Print Ballots</Link></Button>
+              <Button><Link to={`/elections/${id}/signin`}>Sign In Kiosk</Link></Button>
+            </Col>
+          }
+        </Row>
+      )
+    })
     return (
       <div>
         <h2> Elections </h2>
