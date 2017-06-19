@@ -12,6 +12,7 @@ import Elections from './components/election/Elections'
 import ElectionDetail from './components/election/ElectionDetail'
 import NotFound from './components/common/NotFound'
 import PrintBallots from './components/election/PrintBallots'
+import SignInKiosk from './components/election/SignInKiosk'
 import Vote from './components/election/Vote'
 
 import { USE_AUTH } from './config'
@@ -49,6 +50,7 @@ class Routes extends Component {
             <Route path="elections" component={Elections} />
             <Route path="elections/:electionId" component={ElectionDetail} />
             <Route path="elections/:electionId/print" component={PrintBallots} />
+            <Route path="elections/:electionId/signin" component={SignInKiosk} />
             <Route path="vote/:electionId" component={Vote} />
           </Route>
           <Route path="*" component={NotFound}/>

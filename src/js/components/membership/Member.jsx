@@ -25,6 +25,12 @@ class Member extends Component {
     this.fetchMemberData()
   }
 
+  componentDidUpdate (prevProps) {
+    if (this.props.location.pathname !== prevProps.location.pathname) {
+      this.fetchMemberData()
+    }
+  }
+
   render () {
     const roles = []
     const votes = []
@@ -44,6 +50,7 @@ class Member extends Component {
       )
     })
     memberData.get('votes').forEach((vote, index) => {
+      const canVote = !vote.get('voted') && vote.get('election_status') === 'in progress'
       votes.push(
         <div key={`vote-${index}`}>
           <Link to={`/elections/${vote.get('election_id')}/`}>
@@ -51,6 +58,9 @@ class Member extends Component {
             </Link>
           <span> Election Status: <strong>{vote.get('election_status')}</strong> You have {!vote.get('voted') && (<span>not yet</span>)} voted.
           </span>
+          { canVote &&
+          <Link to={`/vote/${vote.get('election_id')}/`}> Vote Now</Link>
+          }
         </div>
       )
     })
