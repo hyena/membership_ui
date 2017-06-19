@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import {connect} from "react-redux";
 import {membershipApi} from "../../services/membership";
 import {HTTP_GET, HTTP_POST, logError} from "../../util/util";
-import {Button, ButtonGroup, Col, Form, FieldControl, Label} from "react-bootstrap";
+import {Button, ButtonGroup, Col, Form, Label} from "react-bootstrap";
 import _ from "lodash";
 import {fromJS, Map, List} from "immutable";
 
@@ -134,12 +134,23 @@ class Vote extends Component {
       )}
     </ul>
     return <div>
+      <p>To add a candidate to your rankings, click on an unranked candidate and they will be added to the bottom of your
+        list. To swap the order of two ranked candidates, click on one and then the other and they will swap places. Rank
+        as many candidates as you'd like. When you're done press the vote button at bottom. Your confirmation number will
+        appear below.</p>
       <Form onSubmit={(e) => e.stopPropagation()}>
         <div className="text-center"><strong>Ranked</strong></div>
         {rankedCandidates}
         <div className="text-center"><strong>Unranked</strong></div>
         {unrankedCandidates}
-        <Button block bsSize="large" bsStyle="primary" onClick={(e) => this.vote()}>VOTE</Button>
+        {this.state.result === null ?
+          <Button disabled={this.state.inSubmission} block bsSize="large" bsStyle="primary" onClick={(e) => this.vote()}>VOTE</Button> :
+          <p>Congratulations. You've successfully voted. Your confirmation number is
+            <strong> {this.state.result.ballot_id}</strong>. Save this number if you'd like to
+            confirm your vote was counted correctly after the election, but keep it private
+            or everybody will be able to see how you voted.
+          </p>
+        }
       </Form>
     </div>
   }
