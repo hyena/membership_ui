@@ -1,0 +1,16 @@
+@import "colors";
+
+.mainNav {
+	background: $brand-red;
+}
+
+.dsaNavItem {
+	a {
+		color: white !important;
+	}
+	&.active {
+		a {
+			background-color: black !important;
+		}
+	}
+}
