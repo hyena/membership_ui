@@ -57,7 +57,7 @@ class PrintBallots extends Component {
                 const numBallotsInput = Sanitize.postiveNum.sanitize(e.target.value)
                 if (numBallotsInput) {
                   const form = this.state.claimAndPrintForm
-                  form.num_ballots = parseInt(numBallotsInput, 10)
+                  form.number_ballots = parseInt(numBallotsInput, 10)
                   this.setState({
                     claimAndPrintForm: form,
                     numBallotsInput: numBallotsInput

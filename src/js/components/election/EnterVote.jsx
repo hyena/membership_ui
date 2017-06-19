@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
-import {Button, Form, FieldControl} from "react-bootstrap";
+import {Button, ButtonGroup, Form, FieldControl} from "react-bootstrap";
 import FieldGroup from "../common/FieldGroup";
 import PaperBallot from "./PaperBallot";
 import {Sanitize} from "../../functional";
@@ -72,7 +72,7 @@ class EnterVote extends Component {
     }
   }
 
-  static sortRanking (rankings) {
+  static sortRankings (rankings) {
     return rankings.entrySeq().sortBy(([cid, rank]) => rank).map(([cid, rank]) => cid)
   }
 
@@ -80,16 +80,18 @@ class EnterVote extends Component {
     if (this.state.existingVote && !this.state.existingVote.get('rankings', List()).isEmpty()) {
       this.verifyVote()
     } else {
-      const resp = confirm(`Are you sure you want to submit ballot #${this.state.vote.get('ballot_key')}?`)
+      const ballotKey = this.state.vote.get('ballot_key')
+      const resp = confirm(`Are you sure you want to submit ballot #${ballotKey}?`)
       if (resp) {
-        const currentVote = this.state.vote.toJSON()
-        await this.submitForm(event, () => ElectionClient.submitPaperBallot(currentVote))
+        const rankedCandidates = EnterVote.sortRankings(this.state.vote.get('rankings'))
+        const voteBody = this.state.vote.set('rankings', rankedCandidates)
+        await this.submitVoteAndReset(event, () => ElectionClient.submitPaperBallot(voteBody))
       }
     }
   }
 
   verifyVote () {
-    const rankedCandidates = EnterVote.sortRanking(this.state.vote.get('rankings'))
+    const rankedCandidates = EnterVote.sortRankings(this.state.vote.get('rankings'))
     const existingRankedCandidates = this.state.existingVote.get('rankings')
     if (rankedCandidates.equals(existingRankedCandidates)) {
       this.setState({
@@ -115,7 +117,7 @@ class EnterVote extends Component {
       ? <PaperBallot
         editable={true}
         election={this.state.election}
-        ballot_key={this.state.vote.get('ballot_key')}
+        ballotKey={this.state.vote.get('ballot_key')}
         onRankingChange={(rankings) => {
           this.setState({
             vote: this.state.vote.set('rankings', rankings),
@@ -127,6 +129,7 @@ class EnterVote extends Component {
 
     let validationBox, overrideButton, validationTable = null
     if (this.state.validation) {
+      // We have a validation box to show
       const status = this.state.validation.get('status')
       if (status === 'error') {
         const existingRankings = this.state.existingVote.get('rankings')
@@ -154,13 +157,18 @@ class EnterVote extends Component {
             </tbody>
           </table>
         )
+        // If we are displaying an error with the ballot, we have the option to override the ballot to submit the current one
         overrideButton = (
           <Button
+            className="center-block"
+            bsStyle="danger"
             onClick={(e) => {
               const ballotKey = this.state.vote.get('ballot_key')
               const resp = confirm(`Are you sure you want to overwrite ballot #${ballotKey}?`)
               if (resp) {
-                this.submitForm(e, () => ElectionClient.submitPaperBallot(this.state.vote.toJSON(), true)
+                const rankedCandidates = EnterVote.sortRankings(this.state.vote.get('rankings'))
+                const voteBody = this.state.vote.set('rankings', rankedCandidates)
+                this.submitVoteAndReset(e, () => ElectionClient.submitPaperBallot(voteBody, true)
                   .then(() => {
                       this.setState({
                         validation: Map({
@@ -176,7 +184,7 @@ class EnterVote extends Component {
           </Button>
         )
       }
-      let validationClasses = ['validation-box', 'alert']
+      let validationClasses = ['validation-box', 'center-block', 'center-text', 'alert']
       switch (this.state.validation.get('status')) {
         case 'success':
           validationClasses.push('alert-success')
@@ -194,8 +202,8 @@ class EnterVote extends Component {
       }
       validationBox = (
         <div className={validationClasses.join(' ')}>
-          {this.state.validation.get('message')}
-          {validationTable}
+          <span className="text-center">{this.state.validation.get('message')}</span>
+          <div className="text-center">{validationTable}</div>
           {overrideButton}
         </div>
       )
@@ -208,6 +216,7 @@ class EnterVote extends Component {
           <FieldGroup
             required
             id="searchBallotKey"
+            ref={(input) => { this.searchInput = input; }}
             type="text"
             label="Ballot Key"
             maxLength="5"
@@ -223,6 +232,7 @@ class EnterVote extends Component {
                 nextState.vote = EnterVote.blankBallot(this.props.params.electionId, searchBallotKey)
               } else {
                 const input = EnterVote.ballotKeyInputSanitizer.sanitize(e.target.value)
+                // Don't allow unsanitary input
                 if (input !== null) {
                   nextState.ballotKeyInput = input
                 }
@@ -251,6 +261,12 @@ class EnterVote extends Component {
         </Form>
       </div>
     )
+  }
+
+  async submitVoteAndReset(e, call) {
+    const result = await this.submitForm(e, call)
+    await this.searchForVote(this.state.vote.get('ballot_key'))
+    return result
   }
 
   async submitForm (e, call) {
