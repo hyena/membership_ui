@@ -153,6 +153,9 @@ class Vote extends Component {
           </p>
         }
       </Form>
+      <div className="footer-padding">
+        {/* A fix for some mobile browsers not being able to click the submit button */}
+      </div>
     </div>
   }
 
